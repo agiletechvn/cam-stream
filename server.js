@@ -108,9 +108,12 @@ httpServer.listen(port, () => {
 });
 const streamReg = new RegExp(`^/${streamApp}/(.*?)$`);
 const wsServer = new WebSocket.Server({ server: httpServer });
-
+const recordPath = path.join(__dirname, "record");
 app.use(express.static(path.join(__dirname, "public")));
-app.use("/record", express.static(path.join(__dirname, "record")));
+if (!fs.existsSync(recordPath)) {
+  fs.mkdirSync(recordPath);
+}
+app.use("/record", express.static(recordPath));
 
 app.get("/save/:streamName", (req, res) => {
   const { streamName } = req.params;
