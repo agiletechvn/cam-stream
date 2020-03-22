@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Cam Stream Client</title>
+    <style type="text/css">
+      html,
+      body {
+        background-color: #111;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <input type="button" value="Save" onclick="save()" />
+      <input type="button" value="Unsave" onclick="unsave()" />
+      <input type="button" value="View Save" onclick="replay()" />
+    </div>
+    <div>
+      <canvas id="video-canvas"></canvas>
+      <video autoplay controls id="replay"></video>
+    </div>
+
+    <script type="text/javascript" src="jsmpeg.min.js"></script>
+    <script type="text/javascript">
+      const streamName = "stream1";
+      var canvas = document.getElementById("video-canvas");
+      var url = `ws://${location.host}/live/${streamName}`;
+      var player = new JSMpeg.Player(url, { canvas: canvas });
+
+      async function save() {
+        const { filename } = await fetch(
+          `http://${location.host}/save/${streamName}`
+        ).then(res => res.json());
+        if (filename) alert(`Save to ${filename}`);
+      }
+
+      async function unsave() {
+        const { filename } = await fetch(
+          `http://${location.host}/unsave/${streamName}`
+        ).then(res => res.json());
+        if (filename) alert(`Stop saving ${filename}`);
+      }
+
+      function replay() {
+        document.querySelector(
+          "video"
+        ).src = `http://${location.host}/record/${streamName}.mp4`;
+      }
+    </script>
+  </body>
+</html>
